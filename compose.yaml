@@ -1,0 +1,27 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  localai-studio:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      LOCALAI_HOST: "0.0.0.0"
+      LOCALAI_PORT: "8080"
+      LOCALAI_OLLAMA_BASE_URL: "http://ollama:11434"
+      LOCALAI_DATA_DIR: "/data"
+    volumes:
+      - studio_data:/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  studio_data:
