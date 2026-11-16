@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - 2026-11-16
+
+### Added
+- System prompt preset manager and model deletion controls in the web workspace UI.
+- Synchronous chat and invalid-attachment error-path integration tests.
+- Comprehensive README with Mermaid architecture diagram, API table, and usage examples.
+
 ## [0.1.0] - 2026-11-16
 
 ### Added

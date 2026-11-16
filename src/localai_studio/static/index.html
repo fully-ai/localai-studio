@@ -32,12 +32,19 @@
         <div class="topbar-actions">
           <button id="toggle-settings-btn" class="btn btn-ghost">Model &amp; Prompt Settings</button>
           <button id="pull-model-btn" class="btn btn-ghost">Pull Model</button>
+          <button id="delete-model-btn" class="btn btn-ghost">Delete Model</button>
         </div>
       </header>
 
       <section id="settings-drawer" class="settings-drawer hidden">
         <div class="settings-grid">
           <div class="field">
+            <label for="prompt-preset-select">Saved System Prompt Presets</label>
+            <div style="display:flex;gap:8px;">
+              <select id="prompt-preset-select" class="select-input" style="flex:1;"><option value="">-- Select preset --</option></select>
+              <button id="save-preset-btn" class="btn btn-ghost" type="button">Save Preset</button>
+              <button id="delete-preset-btn" class="btn btn-ghost" type="button">Delete</button>
+            </div>
             <label for="system-prompt-input">System Prompt</label>
             <textarea id="system-prompt-input" rows="3" placeholder="Optional instructions for the model..."></textarea>
           </div>

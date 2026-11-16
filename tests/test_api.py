@@ -73,6 +73,27 @@ def test_health_and_models(client: tuple[TestClient, list[dict]]) -> None:
     show = tc.get("/api/models/llama3.2:latest")
     assert show.status_code == 200
 
+    delete = tc.delete("/api/models/llama3.2:latest")
+    assert delete.status_code == 200
+    assert delete.json()["status"] == "deleted"
+
+
+def test_non_streaming_chat_and_error_paths(client: tuple[TestClient, list[dict]]) -> None:
+    tc, _ = client
+    conv = tc.post("/api/conversations", json={"title": "Sync Test", "model": "llama3.2:latest"}).json()
+    res = tc.post(
+        f"/api/conversations/{conv['id']}/messages",
+        json={"content": "Ping", "stream": False},
+    )
+    assert res.status_code == 200
+    assert res.json()["assistant_message"]["content"] == "Sync reply"
+
+    bad_att = tc.post(
+        f"/api/conversations/{conv['id']}/messages",
+        json={"content": "Hi", "attachment_ids": ["nonexistent"], "stream": False},
+    )
+    assert bad_att.status_code == 400
+
 
 def test_conversation_crud_and_chat_streaming(client: tuple[TestClient, list[dict]]) -> None:
     tc, captured = client

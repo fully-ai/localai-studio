@@ -241,9 +241,54 @@ el("theme-toggle-btn").onclick = async () => {
   });
 };
 
+async function loadPrompts() {
+  const select = el("prompt-preset-select");
+  select.innerHTML = '<option value="">-- Select preset --</option>';
+  const data = await api("/api/prompts");
+  for (const p of data.prompts) {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.dataset.content = p.content;
+    opt.textContent = p.name;
+    select.appendChild(opt);
+  }
+}
+
+el("prompt-preset-select").onchange = (e) => {
+  const opt = e.target.selectedOptions[0];
+  if (opt && opt.dataset.content) {
+    el("system-prompt-input").value = opt.dataset.content;
+  }
+};
+el("save-preset-btn").onclick = async () => {
+  const content = el("system-prompt-input").value.trim();
+  if (!content) return;
+  const name = prompt("Preset name:");
+  if (!name) return;
+  await api("/api/prompts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, content }),
+  });
+  await loadPrompts();
+};
+el("delete-preset-btn").onclick = async () => {
+  const id = el("prompt-preset-select").value;
+  if (!id) return;
+  await api(`/api/prompts/${id}`, { method: "DELETE" });
+  await loadPrompts();
+};
+el("delete-model-btn").onclick = async () => {
+  const name = el("model-select").value;
+  if (!name || !confirm(`Delete local model '${name}' from Ollama?`)) return;
+  await api(`/api/models/${encodeURIComponent(name)}`, { method: "DELETE" });
+  await loadModels();
+};
+
 (async () => {
   await checkHealth();
   await loadModels();
+  await loadPrompts();
   const prefs = await api("/api/preferences");
   document.documentElement.setAttribute("data-theme", prefs.theme || "dark");
   await loadConversations();
